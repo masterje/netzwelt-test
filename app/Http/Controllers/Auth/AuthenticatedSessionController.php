@@ -7,6 +7,9 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use App\Models\User;
+use Hash;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -28,9 +31,39 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
-        $request->authenticate();
+        $response = Http::post('https://netzwelt-devtest.azurewebsites.net/Account/SignIn', [
+          'username' => $request->get('email'),
+          'password' => $request->get('password'),
+        ]);
 
-        $request->session()->regenerate();
+        if($response->status() == '200')
+        {
+          //1 get creds
+          $body = $response->json();
+
+          //check if registered, login
+          $user = new User;
+          $checkIfUserExists = $user->where('name',$body['username'])->first();
+
+          if(!$checkIfUserExists)
+          {
+            $newUser = User::create([
+                'name' => $body['username'],
+                'email' => str_replace(' ', '',$body['username']).'@.netzwelt.com', //just to fulfill laravel's User class
+                'password' => Hash::make(rand(1000,9999)), //just to fulfill laravel's User class
+            ]);
+
+            Auth::loginUsingId($newUser->id);
+          }
+          else
+          {
+            Auth::loginUsingId($checkIfUserExists->id);
+          }
+        }
+        else
+        {
+          return redirect()->back()->withErrors("Invalid username or password");
+        }
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }
