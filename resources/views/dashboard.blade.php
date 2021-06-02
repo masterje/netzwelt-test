@@ -14,4 +14,37 @@
             </div>
         </div>
     </div>
+
+
+    <div class="py-12">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <ul id="myUL">
+
+            @foreach($data as $row)
+            <li><span class="caret">{{$row['name']}}</span>
+                <ul class="nested">
+              @foreach($row['child'] as $child)
+                <li>
+                  <span class="caret"> - {{$child['name']}}</span>
+
+                  @if(isset($child['child']))
+                    <ul class="nested">
+                    @foreach($child['child'] as $kid)
+                        <li>
+                          <span class="caret"> -- {{$kid['name']}}</span>
+                        </li>
+                    @endforeach
+                    </ul>
+                  @endif
+
+                </li>
+              @endforeach
+                </ul>
+            </li>
+            @endforeach
+
+        </ul>
+      </div>
+    </div>
+
 </x-app-layout>
