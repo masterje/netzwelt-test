@@ -25,13 +25,13 @@
                 <ul class="nested">
               @foreach($row['child'] as $child)
                 <li>
-                  <span class="caret"> - {{$child['name']}}</span>
+                  <span @if(isset($child['child'])) class="caret" @endif> - {{$child['name']}}</span>
 
                   @if(isset($child['child']))
                     <ul class="nested">
                     @foreach($child['child'] as $kid)
                         <li>
-                          <span class="caret"> -- {{$kid['name']}}</span>
+                          <span  @if(isset($kid['child'])) class="caret" @endif> -- {{$kid['name']}}</span>
 
                             @if(isset($kid['child']))
                               <ul class="nested">
