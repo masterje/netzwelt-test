@@ -32,6 +32,15 @@
                     @foreach($child['child'] as $kid)
                         <li>
                           <span class="caret"> -- {{$kid['name']}}</span>
+
+                            @if(isset($kid['child']))
+                              <ul class="nested">
+                                @foreach($kid['child'] as $kk)
+                                <li> --- {{$kk['name']}}</li>
+                                @endforeach
+                              </ul>
+                            @endif
+
                         </li>
                     @endforeach
                     </ul>
